@@ -1,26 +1,204 @@
 @import "tailwindcss";
+@import "@fontsource-variable/bricolage-grotesque/standard.css";
+@import "@fontsource-variable/hanken-grotesk/index.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+  Jetons de design.
+  Mode sombre par défaut (bleu nuit), mode clair conçu séparément.
+  Le thème est porté par l'attribut data-theme sur <html>.
+*/
+:root,
+:root[data-theme="dark"] {
+  --bg: #090d1b;
+  --bg-raised: #0f1527;
+  --bg-sunk: #060914;
+  --fg: #ece9e1;
+  --muted: #9096a8;
+  --line: rgb(236 233 225 / 0.12);
+  --line-strong: rgb(236 233 225 / 0.28);
+  --accent: #a594ff;
+  --accent-ink: #0a0820;
+  --accent-soft: rgb(165 148 255 / 0.14);
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --bg: #f1efea;
+  --bg-raised: #e9e6df;
+  --bg-sunk: #fbfaf7;
+  --fg: #11131f;
+  --muted: #545a6d;
+  --line: rgb(17 19 31 / 0.14);
+  --line-strong: rgb(17 19 31 / 0.34);
+  --accent: #5a42e6;
+  --accent-ink: #ffffff;
+  --accent-soft: rgb(90 66 230 / 0.1);
+  color-scheme: light;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-raised: var(--bg-raised);
+  --color-sunk: var(--bg-sunk);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --font-display: "Bricolage Grotesque Variable", ui-sans-serif, system-ui,
+    sans-serif;
+  --font-sans: "Hanken Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Transition douce entre thèmes, désactivée au premier rendu et si l'utilisateur réduit les animations. */
+html.theme-ready body,
+html.theme-ready .themed {
+  transition:
+    background-color 0.35s ease,
+    color 0.35s ease,
+    border-color 0.35s ease;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Axes de largeur et de poids de la police variable, pilotés par le Hero (variables --w et --wg). */
+.stretch {
+  font-stretch: var(--w, 100%);
+  font-weight: var(--wg, 640);
+  animation: widen 1.4s 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+}
+@keyframes widen {
+  from {
+    font-stretch: 75%;
+    font-weight: 300;
+  }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.page-in {
+  animation: page-in 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Titres de section : serrés, expressifs. */
+.display-xl {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-stretch: 82%;
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+}
+.display-lg {
+  font-family: var(--font-display);
+  font-weight: 650;
+  font-stretch: 88%;
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+}
+
+/* Défilement horizontal des filtres sur mobile sans barre visible. */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Grain très léger pour donner de la matière au fond, sans coût de rendu notable. */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0);
+  }
+}
+@keyframes pulse-dot {
+  0% {
+    box-shadow: 0 0 0 0 var(--accent);
+  }
+  70% {
+    box-shadow: 0 0 0 8px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+@keyframes scroll-cue {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
 }
